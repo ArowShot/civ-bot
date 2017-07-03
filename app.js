@@ -52,8 +52,8 @@ function truncate(str, len) {
     return str.toString().substring(0, len)
 }
 
-async function sendSnitchMessage(user, snitchName, worldName, x, y, z) {
-    await discordClient.channels.get(config.botchannel).send(`\`${user} entered ${snitchName} at ${x}, ${y}, ${z}\``)
+async function sendSnitchMessage(user, action, snitchName, worldName, x, y, z) {
+    await discordClient.channels.get(config.botchannel).send(`\`${user} ${action} ${snitchName} at ${x}, ${y}, ${z}\``)
 }
 
 async function sendChatMessage(channel, username, message) {
@@ -66,10 +66,10 @@ async function sendChatMessage(channel, username, message) {
     await webhook.send(message)
 }
 
-var snitch = /^ \* (\w+) entered snitch at (\w+) \[(\w+) (\d+) (\d+) (\d+)\]/
+var snitch = /^ \* (\w+) (entered|logged out in|logged in to) snitch at (\w+) \[(\w+) (\d+) (\d+) (\d+)\]/
 function handleSnitchMessage(msg) {
     var matches = snitch.exec(msg)
-    sendSnitchMessage(matches[1], matches[2], matches[3], matches[4], matches[5], matches[6])
+    sendSnitchMessage(matches[1], matches[2], matches[3], matches[4], matches[5], matches[6], matches[7])
 }
 
 var nl_msg = /^\[(\w+)\] (\w+): (.+)/
