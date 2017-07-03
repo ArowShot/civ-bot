@@ -1,0 +1,17 @@
+{
+  "name": "civ-bot",
+  "version": "1.0.0",
+  "description": "A bot for listening for snitch alerts and chat messages then sending them to a discord server.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ArowShot",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^11.1.0",
+    "erlpack": "github:hammerandchisel/erlpack",
+    "minecraft-protocol": "^1.3.1",
+    "uws": "^8.14.0"
+  }
+}

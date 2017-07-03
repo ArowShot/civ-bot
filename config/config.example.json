@@ -1,0 +1,11 @@
+{
+    "botToken": "",
+    "botchannel": "",
+    "mcUsername": "",
+    "mcPassword": "",
+    "mcHost": "mc.civclassic.com",
+    "mcPort": 25565,
+    "mcVersion": "1.10.2",
+    "webhookId": "",
+    "webhookToken": ""
+}
