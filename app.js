@@ -13,7 +13,7 @@ const mcClient = mc.createClient({
 
 let webhook
 discordClient.on('ready', () => {
-    discordClient.user.setGame('CivClassic')
+    discordClient.user.setGame(`${config.mcHost}${config.mcPort===25565?'':':'+config.mcPort}`)
     webhook = new Discord.WebhookClient(config.webhookId, config.webhookToken)
     console.log(`Logged in to Discord as ${discordClient.user.tag}!`)
 })
