@@ -1,3 +1,5 @@
+const path = require('path')
+const fs = require('fs')
 const config = require('./config/config')
 const Discord = require('discord.js')
 const mc = require('minecraft-protocol')
@@ -11,10 +13,32 @@ const mcClient = mc.createClient({
     version: config.mcVersion
 })
 
-let webhook
-discordClient.on('ready', () => {
+let webhooks = {}
+let channel
+discordClient.on('ready', async () => {
     discordClient.user.setGame(`${config.mcHost}${config.mcPort===25565?'':':'+config.mcPort}`)
-    webhook = new Discord.WebhookClient(config.webhookId, config.webhookToken)
+    channel = discordClient.channels.get(config.botchannel)
+    var whfile = path.join(__dirname, 'config', 'webhooks.json')
+    var wh = {}
+    if(fs.existsSync(whfile)) {
+        wh = JSON.parse(fs.readFileSync(whfile))
+    }
+    if(wh.primaryId && wh.primaryToken && wh.secondaryId && wh.secondaryToken) {
+        webhooks.primary = new Discord.WebhookClient(wh.primaryId, wh.primaryToken)
+        webhooks.secondary = new Discord.WebhookClient(wh.secondaryId, wh.secondaryToken)
+    } else {
+        webhooks.primary = await channel.createWebhook('primary webhook', 'https://crafatar.com/renders/head/Steve')
+        webhooks.primary.edit('primary webhook', 'https://crafatar.com/renders/head/Steve')
+        webhooks.secondary = await channel.createWebhook('secondary webhook', 'https://crafatar.com/renders/head/Steve')
+        webhooks.secondary.edit('secondary webhook', 'https://crafatar.com/renders/head/Steve')
+        wh = {
+            primaryId: webhooks.primary.id,
+            primaryToken: webhooks.primary.token,
+            secondaryId: webhooks.secondary.id,
+            secondaryToken: webhooks.secondary.token,
+        }
+        fs.writeFileSync(whfile, JSON.stringify(wh))
+    }
     console.log(`Logged in to Discord as ${discordClient.user.tag}!`)
 })
 
@@ -41,6 +65,7 @@ mcClient.on('chat', packet => {
             }
         }, this)
     }
+    console.log(`[CHAT]: ${msg}`)
     handleChatMessage(msg)
 })
 
@@ -53,15 +78,25 @@ function truncate(str, len) {
 }
 
 async function sendSnitchMessage(user, action, snitchName, worldName, x, y, z) {
-    await discordClient.channels.get(config.botchannel).send(`\`${user} ${action} ${snitchName} at ${x}, ${y}, ${z}\``)
+    await channel.send(`\`${user} ${action} ${snitchName} at ${x}, ${y}, ${z}\``)
 }
 
+let usePrimary = false
+let lastUsedName = ''
 async function sendChatMessage(channel, username, message) {
     var name = username
     if(channel != null) {
         name = `[${channel}] ${name}`
     }
-    
+    if(lastUsedName != name)
+        usePrimary = !usePrimary
+    lastUsedName = name
+
+    let webhook
+    if(usePrimary)
+        webhook = webhooks.primary
+    else
+        webhook = webhooks.secondary
     await webhook.edit(truncate(name, 32), `https://crafatar.com/renders/head/${username}`)
     await webhook.send(message)
 }

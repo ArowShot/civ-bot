@@ -1,5 +1,5 @@
 ## civ-bot
-![a](https://david-dm.org/ArowShot/civ-bot.svg)
+[![dependencies Status](https://david-dm.org/arowshot/civ-bot/status.svg)](https://david-dm.org/arowshot/civ-bot)
 
 ### Setup
 1. Install [node.js](https://nodejs.org/)
@@ -26,36 +26,16 @@ Then to start the bot any time run `npm start`
     // Port of minecraft server
     "mcPort": 25565,
     // Version of minecraft server
-    "mcVersion": "1.10.2",
-    // Webhook ID used for sending messages from in-game chat
-    "webhookId": "",
-    // Token for webhook
-    "webhookToken": ""
+    "mcVersion": "1.10.2"
 }
 ```
 
-### Finding webhook ID and token
-1. Right click on the channel the bot will send messages to
-2. Click Edit Channel
-3. Go to Webhooks section
-4. Click Create Webhook (don't change name or avatar)
-5. Copy the Webhook URL
-6. The token is everything after the last '/' and the id is the number before it
-
-#### Example
-If the URL is
-> https://discordapp.com/api/webhooks/331266697807921154/CBxdAXFiyxOZI_P-EB___DPMc7myLfcqHOKW1XyerR83YxSCj5EzcrCcMLcdhslUkT1X
-
-then the token is
->CBxdAXFiyxOZI_P-EB___DPMc7myLfcqHOKW1XyerR83YxSCj5EzcrCcMLcdhslUkT1X
-
-and the ID is
->331266697807921154
 
 ### Upcoming
-- Auto generate webhook if none specified
+- ~~Auto generate webhook if none specified~~
 - Allow messages sent from discord to be sent in-game
 - Switch to UUID lookup for Minecraft skins
+- Filter group/snitch messages to certain channels depending on the namelayer group
 
 ### Using
 - [discord.js](https://github.com/hydrabolt/discord.js) for connecting to Discord API
