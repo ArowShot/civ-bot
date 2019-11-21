@@ -16,7 +16,7 @@ const mcClient = mc.createClient({
 let webhooks = {}
 let channel
 discordClient.on('ready', async () => {
-    discordClient.user.setGame(`${config.mcHost}${config.mcPort===25565?'':':'+config.mcPort}`)
+    discordClient.user.setActivity(`${config.mcHost}${config.mcPort===25565?'':':'+config.mcPort}`)
     channel = discordClient.channels.get(config.botchannel)
     var whfile = path.join(__dirname, 'config', 'webhooks.json')
     var wh = {}
@@ -27,10 +27,14 @@ discordClient.on('ready', async () => {
         webhooks.primary = new Discord.WebhookClient(wh.primaryId, wh.primaryToken)
         webhooks.secondary = new Discord.WebhookClient(wh.secondaryId, wh.secondaryToken)
     } else {
-        webhooks.primary = await channel.createWebhook('primary webhook', 'https://crafatar.com/renders/head/Steve')
-        webhooks.primary.edit('primary webhook', 'https://crafatar.com/renders/head/Steve')
-        webhooks.secondary = await channel.createWebhook('secondary webhook', 'https://crafatar.com/renders/head/Steve')
-        webhooks.secondary.edit('secondary webhook', 'https://crafatar.com/renders/head/Steve')
+        try {
+            webhooks.primary = await channel.createWebhook('primary webhook', 'https://crafatar.com/renders/head/8667ba71b85a4004af54457a9734eed7')
+            webhooks.primary.edit('primary webhook', 'https://crafatar.com/renders/head/8667ba71b85a4004af54457a9734eed7')
+            webhooks.secondary = await channel.createWebhook('secondary webhook', 'https://crafatar.com/renders/head/8667ba71b85a4004af54457a9734eed7')
+            webhooks.secondary.edit('secondary webhook', 'https://crafatar.com/renders/head/8667ba71b85a4004af54457a9734eed7')
+        } catch(e) {
+            console.error(e)
+        }
         wh = {
             primaryId: webhooks.primary.id,
             primaryToken: webhooks.primary.token,
@@ -97,17 +101,22 @@ async function sendChatMessage(channel, username, message) {
         webhook = webhooks.primary
     else
         webhook = webhooks.secondary
-    await webhook.edit(truncate(name, 32), `https://crafatar.com/renders/head/${username}`)
-    await webhook.send(message)
+    
+    try {
+        await webhook.edit(truncate(name, 32), `https://crafatar.com/renders/head/8667ba71b85a4004af54457a9734eed7`)
+        await webhook.send(message)
+    } catch(e) {
+        console.error(e)
+    }
 }
 
-var snitch = /^ \* (\w+) (entered|logged out in|logged in to) snitch at (\w+) \[(\w+) (\d+) (\d+) (\d+)\]/
+var snitch = /^(.+)\* (\w+) (entered|logged out in|logged in to) snitch at (.*) \[(\w+) (\d+) (\d+) (.+)\]/
 function handleSnitchMessage(msg) {
     var matches = snitch.exec(msg)
     sendSnitchMessage(matches[1], matches[2], matches[3], matches[4], matches[5], matches[6], matches[7])
 }
 
-var nl_msg = /^\[(\w+)\] (\w+): (.+)/
+var nl_msg = /^\[(.+)\] (\w+): (.+)/
 function handleNameLayerMessage(msg) {
     var matches = nl_msg.exec(msg)
     sendChatMessage(matches[1], matches[2], matches[3])
