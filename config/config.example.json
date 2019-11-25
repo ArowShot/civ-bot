@@ -1,6 +1,9 @@
 {
     "botToken": "",
-    "botchannel": "",
+    "botchannel": {
+        "": "",
+        "!": ""
+    },
     "mcUsername": "",
     "mcPassword": "",
     "mcHost": "mc.civclassic.com",
