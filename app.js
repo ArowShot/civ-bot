@@ -5,14 +5,6 @@ const Discord = require('discord.js')
 const mc = require('minecraft-protocol')
 const discordClient = new Discord.Client()
 
-const mcClient = mc.createClient({
-    host: config.mcHost,
-    port: config.mcPort,
-    username: config.mcUsername,
-    password: config.mcPassword,
-    version: config.mcVersion
-})
-
 let discordChannel
 discordClient.on('ready', async () => {
     discordClient.user.setActivity(`${config.mcHost}${config.mcPort===25565?'':':'+config.mcPort}`)
@@ -30,26 +22,41 @@ discordClient.on('message', async msg => {
 
 discordClient.login(config.botToken)
 
-mcClient.on('chat', packet => {
-    var msg = ''
-    var json = JSON.parse(packet.message)
-    if(json.text) {
-        msg += json.text
-    }
-    if(json.extra) {
-        json.extra.forEach(function(m) {
-            if(m.text) {
-                msg += m.text
-            }
-        }, this)
-    }
-    console.log(`[CHAT]: ${msg}`)
-    handleChatMessage(msg)
-})
+function start() {
+    const mcClient = mc.createClient({
+        host: config.mcHost,
+        port: config.mcPort,
+        username: config.mcUsername,
+        password: config.mcPassword,
+        version: config.mcVersion
+    })
 
-mcClient.on('success', packet => {
-    console.log(`Logged in to ${config.mcHost}${config.mcPort===25565?'':':'+config.mcPort} with ${packet.username}`)
-})
+    mcClient.on('chat', packet => {
+        var msg = ''
+        var json = JSON.parse(packet.message)
+        if(json.text) {
+            msg += json.text
+        }
+        if(json.extra) {
+            json.extra.forEach(function(m) {
+                if(m.text) {
+                    msg += m.text
+                }
+            }, this)
+        }
+        console.log(`[CHAT]: ${msg}`)
+        handleChatMessage(msg)
+    })
+
+    mcClient.on('success', packet => {
+        console.log(`Logged in to ${config.mcHost}${config.mcPort===25565?'':':'+config.mcPort} with ${packet.username}`)
+    })
+
+    mcClient.on('end', () => {
+        mcClient.removeAllListeners()
+        setTimeout(start, 5000)
+    })
+}
 
 function truncate(str, len) {
     return str.toString().substring(0, len)
