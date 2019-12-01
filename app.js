@@ -57,6 +57,7 @@ function start() {
         setTimeout(start, 5000)
     })
 }
+start()
 
 function truncate(str, len) {
     return str.toString().substring(0, len)
